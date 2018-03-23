@@ -1,0 +1,201 @@
+
+// 各业务部、交易数对比分析图
+function xmjy() {
+	$.post(basepath + "/chart/getProTarder.html", {xmssbmid:$("#xmssbmId").val(),startDate:$("#startDate").val(),endDate:$("#endDate").val()}, function(data1) {
+		$("#senfe").empty();
+		//列表数据
+		if(data1.list!=null){
+			var str='<thead><tr><th nowrap="nowrap">项目部门</th><th nowrap="nowrap" >项目数(宗)</th>	<th nowrap="nowrap">涉及资产额(亿元)</th>';
+			   str+='<th nowrap="nowrap" >交易额(亿元)</th><th nowrap="nowrap" >增值率(%)</th></tr></thead><tbody>';
+             $.each(data1.list,function(k,v) {
+				 str+='<tr > <td nowrap="nowrap">'+ v.XMSSBMMC+'</td>';
+				 str+='<td nowrap="nowrap">'+ v.XMCOUNT+'</td>';
+				 str+='<td nowrap="nowrap">'+ v.ZRFPGJ+'</td>';
+				 str+='<td nowrap="nowrap">'+ v.ZRFCJJ+'</td>';
+				 str+='<td nowrap="nowrap">'+ v.ZZL+'</td></tr>';
+			});
+			str+='</tbody>';
+			$("#senfe").append(str);
+		}
+		//图表
+		require.config({
+			paths : {
+				echarts : basepath + '/js/echart227/build/dist'
+			}
+		});
+		require([ 'echarts', 'echarts/chart/line', // 按需加载所需图表，如需动态类型切换功能，别忘了同时加载相应图表
+			'echarts/chart/bar' ], function(ec) {
+			var ecConfig = require('echarts/config');
+			var myChart1 = ec.init(document.getElementById('xm_jy'));
+			option = {
+				title : {
+					x: 'center',
+					y: 'top',
+					text: '各业务部、交易数对比分析图'
+				},
+				tooltip : {
+					trigger: 'axis'
+				},
+				legend: {
+					x: 'center',
+					y: 'bottom',
+					data: eval("[" + data1.legend_data + "]")
+				},
+				calculable : true,
+				yAxis : [
+					{
+						type : 'value',
+						boundaryGap : [0, 0.01]
+					}
+				],
+				xAxis : [
+					{
+						type : 'category',
+						data : ['项目数(宗)','涉及资产额(亿元)','交易额(亿元)','增值率(%)']
+					}
+				],
+				 series : eval("[" + data1.series_data + "]")
+			};
+			myChart1.hideLoading();
+			// 为echarts对象加载数据
+			myChart1.setOption(option);
+		});
+	});
+}
+
+// 各会员、交易数对比分析图
+function hyjy() {
+	$.post(basepath + "/chart/getDLHY.html", {dlhyid:$("#dlhyId").val(),jgmc:$("#dlhyId_").val(),startDate:$("#startDate").val(),endDate:$("#endDate").val()}, function(data1) {
+		$("#senfe").empty();
+		//列表数据
+		if(data1.list!=null){
+			var str='<thead><tr><th nowrap="nowrap">会员单位</th><th nowrap="nowrap" >项目数(宗)</th>	<th nowrap="nowrap">涉及资产额(亿元)</th>';
+			str+='<th nowrap="nowrap" >交易额(亿元)</th><th nowrap="nowrap" >增值率(%)</th></tr></thead><tbody>';
+			$.each(data1.list,function(k,v) {
+				str+='<tr > <td nowrap="nowrap">'+ v.JGMC+'</td>';
+				str+='<td nowrap="nowrap">'+ v.XMCOUNT+'</td>';
+				str+='<td nowrap="nowrap">'+ v.ZRFPGJ+'</td>';
+				str+='<td nowrap="nowrap">'+ v.ZRFCJJ+'</td>';
+				str+='<td nowrap="nowrap">'+ v.ZZL+'</td></tr>';
+			});
+			str+='</tbody>';
+			$("#senfe").append(str);
+		}
+		//图表
+		 require.config({
+			paths : {
+				echarts : basepath + '/js/echart227/build/dist'
+			}
+		});
+		require([ 'echarts', 'echarts/chart/line', // 按需加载所需图表，如需动态类型切换功能，别忘了同时加载相应图表
+			'echarts/chart/bar' ], function(ec) {
+			var ecConfig = require('echarts/config');
+			var myChart1 = ec.init(document.getElementById('hy_jy'));
+			option = {
+				title : {
+					x: 'center',
+					y: 'top',
+					text: '各会员单位、交易数对比分析图'
+				},
+				tooltip : {
+					trigger: 'axis'
+				},
+				legend: {
+					x: 'center',
+					y: 'bottom',
+					data: eval("[" + data1.legend_data + "]")
+				},
+				calculable : true,
+				yAxis : [
+					{
+						type : 'value',
+						boundaryGap : [0, 0.01]
+					}
+				],
+				xAxis : [
+					{
+						type : 'category',
+						data : ['项目数(宗)','涉及资产额(亿元)','交易额(亿元)','增值率(%)']
+					}
+				],
+				series : eval("[" + data1.series_data + "]")
+			};
+			myChart1.hideLoading();
+			// 为echarts对象加载数据
+			myChart1.setOption(option);
+		});
+	});
+}
+
+
+// 各产权项目、交易数对比分析图
+function cqjy() {
+	$.post(basepath + "/chart/getCqxm.html", {}, function(data1) {
+		$("#senfe").empty();
+		//列表数据
+		if(data1.list!=null){
+
+		}
+		//图表
+		require.config({
+			paths : {
+				echarts : basepath + '/js/echart227/build/dist'
+			}
+		});
+		require([ 'echarts', 'echarts/chart/bar', // 按需加载所需图表，如需动态类型切换功能，别忘了同时加载相应图表
+			'echarts/chart/bar' ], function(ec) {
+			var ecConfig = require('echarts/config');
+			var myChart1 = ec.init(document.getElementById('cqxm_jy'));
+			option = {
+				title : {
+					text: '产权项目数占比',
+					x:'center'
+				},
+				tooltip : {
+					trigger: 'item',
+					formatter: "{a} <br/>{b} : {c} ({d}%)"
+				},
+				legend: {
+					orient : 'vertical',
+					x : 'left',
+					data: eval("[" + data1.legend_data + "]")
+					//data:['直接访问','邮件营销','联盟广告','视频广告','搜索引擎']
+				},
+				calculable : true,
+				series : [
+					{
+						name:'访问来源',
+						type:'pie',
+						radius : '55%',
+						center: ['50%', '60%'],
+						series : eval("[" + data1.series_data + "]")
+						/*data:[
+							{value:335, name:'直接访问'},
+							{value:310, name:'邮件营销'},
+							{value:234, name:'联盟广告'},
+							{value:135, name:'视频广告'},
+							{value:1548, name:'搜索引擎'}
+						]*/
+					}
+				]
+			};
+			myChart1.hideLoading();
+			// 为echarts对象加载数据
+			myChart1.setOption(option);
+		});
+	});
+}
+
+function selDept(){
+	layer.open({
+		type: 2,
+		title:"部门",
+		fix: true,
+		offset: ['1px', ''],
+		area: ['50%', '90%'],
+		fix: false, //不固定
+		maxmin: true,
+		scrolling: 'auto',
+		content:[url=basepath+'/jsp/project/only_dept_tree.jsp', 'yes']
+	});
+}

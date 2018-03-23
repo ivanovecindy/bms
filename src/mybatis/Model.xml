@@ -1,0 +1,115 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.mapper.ModelMapper">
+        <resultMap type="com.entity.Model" id="ModelResultMap">
+
+                <!--数据唯一性ID-->
+                <id column="id" property="id"/>
+                <!--父ID-->
+                <id column="pId" property="pId"/>
+                <!--模块名称-->
+                <result column="modName" property="modName"/>
+                <!--模块类型-->
+                <result column="modeType" property="modeType"/>
+                <!--生成时间-->
+                <result column="createDate" property="createDate"/>
+                <!--是否显示-->
+                <result column="isView" property="isView"/>
+                <!--IP-->
+                <result column="ip" property="ip"/>
+                <!--显示顺序-->
+                <result column="xh" property="xh"/>
+                <!--模块地址-->
+                <result column="url" property="url"/>
+                <!--模块地址-->
+                <result column="weburl" property="weburl"/>
+                <!--描述-->
+                <result column="remark" property="remark"/>
+                <!--描述-->
+                <result column="icon" property="icon"/>
+        </resultMap>
+        <sql id="modelColumns">id,pId,modName,modeType,createDate,isView,ip,xh,url,remark,icon,weburl</sql>
+        <select id="getModelInfo" parameterType="com.entity.Model"
+                resultMap="ModelResultMap">
+                select
+                <include refid="modelColumns" />
+                from t_model where 1=1
+                <if test="id != null and id != ''">
+                        and id = #{id}
+                </if>
+        </select>
+        <select id="listPageModel" resultMap="ModelResultMap"
+                parameterType="com.entity.Model">
+                SELECT
+                <include refid="modelColumns" />
+                FROM t_model WHERE 1 = 1
+                <if test="id != null and id != ''">
+                        and id = #{id}
+                </if>
+                <if test="pId != null and pId != ''">
+                        and pId = #{pId}
+                </if>
+                <if test="modName != null and modName != ''">
+                        and modName = #{modName}
+                </if>
+                <if test="cxtj != null and cxtj != ''">
+                        ${cxtj}
+                </if>
+                <if test="isView != null and isView != ''">
+                        and isView = #{isView}
+                </if>
+        </select>
+        <select id="getlistModel" resultMap="ModelResultMap"
+                parameterType="com.entity.Model">
+                SELECT
+                <include refid="modelColumns" />
+                FROM t_model WHERE 1 = 1
+                <if test="id != null and id != ''">
+                        and id = #{id}
+                </if>
+                <if test="pId != null and pId != ''">
+                        and pId = #{pId}
+                </if>
+                <if test="modName != null and modName != ''">
+                        and modName = #{modName}
+                </if>
+                <if test="isView != null and isView != ''">
+                        and isView = #{isView}
+                </if>
+                <if test="weburl != null and weburl != ''">
+                        and weburl = #{weburl}
+                </if>
+                <if test="modeType != null and modeType != ''">
+                        and modeType = #{modeType}
+                </if>
+                <if test="cxtj != null and cxtj != ''">
+                         ${cxtj}
+                </if>
+        </select>
+
+        <!--项目基本信息插入SQL -->
+        <insert id="insertModel" parameterType="com.entity.Model">
+                insert into t_model (
+                <include refid="modelColumns" />
+                ) values
+                (#{id},#{pId},#{modName},#{modeType},#{createDate},#{isView},#{ip},#{xh},#{url},#{remark},#{icon},#{weburl})
+        </insert>
+        <update id="updateModel" parameterType="com.entity.Model">
+                UPDATE t_model SET
+               modName=#{modName},pId=#{pId},modeType=#{modeType},createDate=#{createDate},isView=#{isView},ip=#{ip},xh=#{xh},remark=#{remark},url=#{url},icon=#{icon},weburl=#{weburl}
+                WHERE id=#{id}
+        </update>
+        <delete id="deleteModel" parameterType="string">
+                DELETE  FROM  t_model  where
+                id=#{id}
+        </delete>
+        <select id="getModelInfoByid" resultMap="ModelResultMap"
+                parameterType="string">
+                SELECT
+                <include refid="modelColumns" />
+                FROM t_model WHERE 1 = 1
+                and id = #{id}
+        </select>
+
+</mapper>

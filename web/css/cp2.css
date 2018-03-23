@@ -1,0 +1,28 @@
+/* 一流资源网整理发布 http://www.16css.com  此代码经一流资源网重新整理代码精简，去掉了许多无用的CSS代码，为目前网络最精简最完美版 */
+ul,li,p,dl,dt,dd,h1,h2,h3,h4,h5,span {margin:0; padding:0;}
+
+#bannera {width:580px; height:350px; margin:0 auto}
+.pro-switch {height:350px;overflow: hidden;	position: relative;	width:580px;}
+.flexslider {margin: 0;	padding: 0;}
+.flexslider .slides > li {display: none;-webkit-backface-visibility: hidden;}
+.flexslider .slides img {width: 580px;display: block;}
+.slides:after {content: ".";display: block;clear: both;visibility: hidden;line-height: 0;height: 0;}
+html[xmlns] .slides {display: block;}
+.slides {height: 350px;}
+.no-js .slides > li:first-child {display: block;}
+.flexslider {margin: 0 auto;position: relative;width:580px; height:350px; zoom: 1;}
+.flex-viewport {max-height: 2000px;	-webkit-transition: all 1s ease;-moz-transition: all 1s ease;transition: all 1s ease;}
+.flexslider .slides {zoom: 1;}
+.flex-direction-nav {*height: 0;}
+.flex-direction-nav a {width: 60px;height: 90px;margin: -60px 0 0;display: block;background: url(../images/ad_ctr.png) no-repeat 0 0;
+position: absolute;top: 50%;z-index: 10;cursor: pointer;text-indent: -9999px;opacity: 0;filter:alpha(opacity=0);-webkit-transition: all .3s ease;}
+.flex-direction-nav .flex-next {background-position: 0 -90px;right: 0;}
+.flex-direction-nav .flex-prev {left: 0;}
+.flexslider:hover .flex-next {opacity: 0.8;	filter:alpha(opacity=25);}
+.flexslider:hover .flex-prev {opacity: 0.8;	filter:alpha(opacity=25);}
+.flexslider:hover .flex-next:hover, .flexslider:hover .flex-prev:hover {opacity: 1;filter:alpha(opacity=50);}
+.flex-control-nav {width:100%;	position: absolute;	bottom:10px;text-align: center; margin:0; padding:0}
+.flex-control-nav li {margin: 0 5px;display: inline-block;zoom: 1;*display: inline;}
+.flex-control-paging li a {background: url(../images/dot.png) no-repeat 0 -16px;display:block;height: 16px;overflow: hidden;text-indent:-99em;width: 16px;cursor: pointer;}
+.flex-control-paging li a.flex-active {background-position: 0 0;}
+/* 一流资源网整理发布 http://www.16css.com */

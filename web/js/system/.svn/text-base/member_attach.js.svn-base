@@ -1,0 +1,199 @@
+var bt_code=[];
+MyValidator1 = tt.BV.ext({  
+    /** 
+     * 验证的主方法 
+     */  
+    v : function(trimedValue, indexOfElements, elements, field){  
+    	   if (trimedValue != ''){  
+               return true;  
+           }
+    	   return false; 
+    },  
+    getI18 : function(label){  
+        return "请选择上传文件!";  
+    },  
+});  
+ 
+
+//会员材料信息
+function createTable(){
+	 $.post(basepath+"/memberAttch/memberAttchPage.html",{p_code:'HYFJ'},function(data){
+		 var str='';
+		 bt_code=[];
+		  $.each(data.memberAttch,function(key,valu) {
+			  str+='<tr><td  height="40"  align="right">'+valu.code_name;
+			  if(valu.isbt==1){
+				  str+='<b style="color:#F00;">*</b>'; 
+				  bt_code.push(valu.code);
+			  }
+			  str+='</td><td  height="40" nowrap="nowrap" align="right">文件名称:</td><td  height="40"nowrap="nowrap" align="left"><input type="text" readonly="readonly"  id="fjmc_'+valu.code+'" name="fjmc_'+valu.code+'" class="df_input" style="width:220px;"   /></td>';
+			  str+='<td  height="40" nowrap="nowrap" align="left"><input type="hidden"     name="id_'+valu.code+'" id="id_'+valu.code+'" />';
+			  str+='<input type="hidden"  name="fjdz_'+valu.code+'" id="fjdz_'+valu.code+'" /><input type="hidden"  name="fjpzname_'+valu.code+'" id="fjpzname_'+valu.code+'" value="'+valu.code_name+'"  />';
+			  str+='<input type="file"   style="width:65px;"  onchange ="getFile(this.id);"  name="'+valu.code+'" id="'+valu.code+'"/>' ;
+			  str+='&nbsp;&nbsp;<input type="button" onclick ="getView(\''+valu.code+'\');"  style="display:none"   id="view_'+valu.code+'"  value="预览"  />&nbsp;&nbsp;';
+			  str+='&nbsp;&nbsp;&nbsp;<input type="button"  id="xz_'+valu.code+'"    value="下载" style="display:none" onclick="down(\''+valu.code+'\')" />&nbsp;&nbsp;<input type="button" id="del_'+valu.code+'" name="delhyfj"   style="display:none" value="删除" onclick="delAttachment(\''+valu.code+'\')" />';
+			  str+='</td></tr>';
+		   });
+		  $("#t_fj").append(str);
+		  updateMemberAttch('');
+	   });
+}
+var extArray = new Array( "jpg","pdf");
+function getFile(id_){
+	 var f = document.getElementById(id_).files;
+	 if(document.getElementById(id_).value!=''){
+		 var fileName = f[0].name;
+		 var fileType = (fileName.substring(fileName.lastIndexOf(".")+1,fileName.length)).toLowerCase();
+		 if(!extArray.Contains(fileType)){
+			 alert("请上传图片或者PDF文件格式的文件");
+			 document.getElementById(id_).value='';
+			 $("#fjmc_"+id_).val('');
+			 return;
+		 }else{
+			  $("#fjmc_"+id_).val(f[0].name);
+		 }   
+	 }
+}
+//会员材料信息提交保存
+function upload(){
+    if(tt.validate()){
+      $("#memberattachForm").action =basepath+'/memberAttch/filesUpload.html';
+     $("#memberattachForm").submit(); 
+  }
+}
+//修改标/查看会员材料信息
+var data_=null;
+function updateMemberAttch(sqrid){
+	var path=basepath+"/memberAttch/updateOrMemberAttach.html";
+	$.ajax({ 
+        type: "post", 
+         url: path, 
+          dataType: "json", 
+          data:{sqrid:sqrid},
+          success: function (data) {
+        	   bt_code.join(",");
+        	   if(data.tjzt=='1'){
+        	       $("#member_tj").hide();
+        	     }
+        	   if(data.listMemberAttch.length!=0){
+        		   $.each(data.listMemberAttch,function(key,valu) {
+         			   $("#fjdz_"+valu.fjpzcode).val(valu.fjdz);
+         			   $("#fjmc_"+valu.fjpzcode).val(valu.fjmc);
+         			   $("#id_"+valu.fjpzcode).val(valu.id);
+         			   $("#xz_"+valu.fjpzcode).show();
+					   if(data.tjzt=='1'){
+						   $("#del_"+valu.fjpzcode).hide();
+					   }else{
+						   $("#del_"+valu.fjpzcode).show();
+					   }
+               	       $("#view_"+valu.fjpzcode).show();
+               	       removeArray(bt_code,valu.fjpzcode);
+               	       if(data.ywzt!=null&&data.ywzt!=''){
+               	        $("#"+valu.fjpzcode).hide();
+             	       }
+         		   });
+        	   }
+        	   $.each(bt_code,function(key,valu) {
+					if($("#fjmc_"+valu).val()==''){
+					      str="\""+valu+"\"";
+						   new MyValidator1().add(eval(str)); 
+					   } 
+				});
+        	 } 
+        });
+	   }
+//会员材料信息
+function createViewTable(sqrid){
+	 $.post(basepath+"/memberAttch/memberAttchPage.html",{p_code:'HYFJ'},function(data){
+		 var str='';
+		 bt_code=[];
+		  $.each(data.memberAttch,function(key,valu) {
+			  str+='<tr><td  height="40"  align="right">'+valu.code_name+'</td>';
+			  str+='<td  height="40" nowrap="nowrap" align="right">文件名称:</td><td  height="40"nowrap="nowrap" align="left"><input type="text"  disabled="disabled"   id="fjmc_'+valu.code+'" name="fjmc_'+valu.code+'" class="df_input" style="width:220px;"   /></td>';
+			  str+='<td  height="40" nowrap="nowrap" align="left"><input type="hidden"     name="id_'+valu.code+'" id="id_'+valu.code+'" />';
+			  str+='<input type="hidden"  name="fjdz_'+valu.code+'" id="fjdz_'+valu.code+'" /><input type="hidden"  name="fjpzname_'+valu.code+'" id="fjpzname_'+valu.code+'" value="'+valu.code_name+'"  />';
+			  str+='&nbsp;&nbsp;<input type="button" onclick ="getView(\''+valu.code+'\');"  style="display:none"   id="view_'+valu.code+'"  value="预览"  />&nbsp;&nbsp;';
+			  str+='&nbsp;&nbsp;&nbsp;<input type="button"  id="xz_'+valu.code+'"    value="下载" style="display:none" onclick="down(\''+valu.code+'\')" />&nbsp;&nbsp; ';
+			  str+='</td></tr>';
+		   });
+		  $("#t_fj").append(str);
+		  viewMemberAttach(sqrid);
+	   });
+}
+function viewMemberAttach(sqrid){
+	var path=basepath+"/memberAttch/viewMemberAttach.html";
+	$.ajax({ 
+        type: "post", 
+         url: path, 
+          dataType: "json", 
+          data:{sqrid:sqrid},
+          success: function (data) {
+        	   bt_code.join(",");
+        	   if(data.listMemberAttch.length!=0){
+        		   $.each(data.listMemberAttch,function(key,valu) {
+         			   $("#fjdz_"+valu.fjpzcode).val(valu.fjdz);
+         			   $("#fjmc_"+valu.fjpzcode).val(valu.fjmc);
+         			   $("#id_"+valu.fjpzcode).val(valu.id);
+         			   $("#xz_"+valu.fjpzcode).show();
+               	       $("#del_"+valu.fjpzcode).show();
+               	       $("#view_"+valu.fjpzcode).show();
+               	       removeArray(bt_code,valu.fjpzcode);
+         		   });
+        	   }
+        	   $.each(bt_code,function(key,valu) {
+					if($("#fjmc_"+valu).val()==''){
+					      str="\""+valu+"\"";
+						   new MyValidator1().add(eval(str)); 
+					   } 
+				});
+        	 } 
+        });
+	   }
+//预览
+function getView(code){
+	 var title="图片查看";
+	 var id = $("#id_"+code).val();
+	 var fjmc = $("#fjmc_"+code).val();
+	 var url=basepath+'/memberAttch/previewPic.html?id='+id;
+	 if(fjmc.lastIndexOf("pdf")!=-1){
+		 title="PDF查看";
+		 url=basepath+'/memberAttch/previewPdf.html?id='+id;
+	 }
+	 layer.open({
+		    type: 2,
+		    title:title,
+		    fix: true,
+		    offset: ['1px', ''],
+			area: ['98%', '90%'],
+		    fix: false, //不固定
+		    maxmin: true,
+			scrolling: 'auto',
+		    content:[url, 'yes']
+		});
+}
+//下载
+function down(code){
+	 var id = $("#id_"+code).val();
+	 var url = basepath+"/memberAttch/download.html?id="+id;
+	 window.location.href=url;
+}
+  //删除附件信息
+	   function delAttachment(code){
+		   if(confirm("确定要删除数据吗？")){
+		   var id = $("#id_"+code).val();
+			var path=basepath+"/memberAttch/deleteMemberAttch.html";
+			$.ajax({ 
+                type: "post", 
+                 url: path, 
+                  data:{id:id},
+                 dataType: "json", 
+                 success: function (data) { 
+               	  if(data.mesg){
+               		  window.location.reload(true);
+               	  }
+                   } 
+             });
+		   }
+	   }
+
+  

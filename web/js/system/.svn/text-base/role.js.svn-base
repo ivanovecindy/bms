@@ -1,0 +1,171 @@
+//角色信息
+//新增角色信息页面
+function addrole(id, flag) {
+	layer.open({
+		type : 2,
+		title : '角色信息',
+		fix : true,
+		offset : [ '1px', '' ],
+		area : [ '98%', '90%' ],
+		fix : false, // 不固定
+		maxmin : true,
+		scrolling : 'auto',
+		content : [
+				basepath + '/jsp/system/role_add.jsp?id=' + id + "&flag="
+						+ flag, 'yes' ]
+	});
+}
+//角色代码校验
+function checkCode(){
+	var bol=false; 
+	$.ajax({ 
+        type: "post", 
+         url: basepath + "/role/checkCode.html", 
+         async:false, 
+         data:$("#roleForm").serializeArray(),
+         dataType: "json", 
+         success: function (data) { 
+        	 if(data.mesg){
+    			 alert("角色代码已存在!");
+    			 bol=true; 
+    		 }else{
+    			 bol=false; 
+    		 }
+           } 
+        });
+	return bol; 
+}
+// 角色信息提交保存
+function roleSubmit() {
+	if (tt.validate()) {
+		  if(!checkCode()){
+			  $("#sfgd").val($('input:radio[name="sfgd_"]:checked').val());
+			  $("#isgly").val($('input:radio[name="isgly_"]:checked').val());
+			  $.post(basepath + "/role/saveRole.html", $("#roleForm")
+						.serializeArray(), function(data) {
+					parent.flushList(data.mesg);
+		   });
+		 } 
+	}else{
+		 $("#"+tt.vf.invalidEs[0].id).focus();
+	}
+}
+
+// 初始化数据
+var data_ = null;
+function roleView(id) {
+	var path = basepath + "/role/updateOrRole.html?id=" + id;
+	$.ajax({
+		type : "post",
+		url : path,
+		data : {
+			id : id
+		},
+		dataType : "json",
+		success : function(data) {
+			if (data != null) {
+				var st = [ "id", "roleName","roleCode", "remark"];
+				initFormData(data, st, "role");
+				 $("input:radio[name=sfgd_][value="+data.role.sfgd+"]").attr("checked",true);
+				 $("input:radio[name=isgly_][value="+data.role.isgly+"]").attr("checked",true);
+				var viewFlag = $("#flag").val();
+				if (viewFlag == 'view') {
+					$.each(st, function(k, v) {
+						$("input[name='" + v + "']").attr("disabled", true);
+						$("select[name='" + v + "']").attr("disabled", true);
+						$("textarea[name='" + v + "']").attr("disabled", true);
+					});
+					$("#queding").css("display", "none");
+				}
+
+			}
+		}
+	});
+}
+
+// 删除标的信息
+function delRole(id,sfgd) {
+	if(sfgd=='1'){
+		alert("固定角色不能删除");
+		return ;
+	}
+	if(confirm("确定要删除数据吗？")){
+	var path = basepath + "/role/deleteRole.html";
+	$.ajax({
+		type : "post",
+		url : path,
+		data : {
+			ids : id
+		},
+		dataType : "json",
+		success : function(data) {
+			if (data.mesg) {
+				alert("删除成功");
+				window.location.reload(true);
+			}
+		}
+	});
+  }
+}
+//分配模块
+function fpmodule(id){
+	 layer.open({
+		    type: 2,
+		    title:'模块信息',
+		    fix: true,
+		    offset: ['1px', ''],
+			area: ['90%', '90%'],
+		    fix: false, //不固定
+		    maxmin: true,
+			scrolling: 'auto',
+		    content:[basepath + '/menu/createMenuPage.html?role_id=' + id, 'yes']
+		});
+}
+//分配模块保存
+function saveFpMenu(){
+	var menu_id=[];
+	  $('input:checkbox[name="modelname"]').each(function() {
+		  if ($(this).is(":checked")) {
+	        	menu_id.push($(this).val());
+	        }
+    }); 
+	 $.post(basepath + "/role/saveRoleFpMenu.html", {menu_ids:menu_id.join(","),role_id:$("#role_id").val()}, function (data) {
+			if(data.mesg){
+				alert("分配成功");
+				quexiao();
+			}
+		}); 
+}
+//分配用户
+function fpuser(id){
+	 layer.open({
+		    type: 2,
+		    title:'用户信息',
+		    fix: true,
+		    offset: ['1px', ''],
+			area: ['90%', '90%'],
+		    fix: false, //不固定
+		    maxmin: true,
+			scrolling: 'auto',
+		    content:[basepath + '/user/userFpList.html?lead=role&role_id=' + id, 'yes']
+		});
+}
+//分配模块保存
+function saveFpUser(){
+    $.post(basepath + "/role/saveRoleFpUser.html", {user_sel_ids:sel_check.join(","),user_nosel_ids:sel_noCheck.join(","),role_id:$("#role_id").val()}, function (data) {
+			if(data.mesg){
+				alert("分配成功");
+				quexiao();
+			}
+		});  
+}
+function quexiao() {
+	var index = parent.layer.getFrameIndex(window.name);
+	parent.layer.close(index);
+}
+//人员角色选择确定
+function queding(){
+	  parent.$("#jsid_sel").val($("#jsid_sel").val());
+	  parent.$("#jsid_del").val($("#jsid_del").val());
+	quexiao();
+}

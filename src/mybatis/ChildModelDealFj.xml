@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.mapper.ChildModelDealFjMapper">
+        <resultMap type="com.entity.ChildModelDealFj" id="ChildModelDealFjResultMap">
+                <!--数据唯一性ID-->
+                <id column="id" property="id"/>
+                <!--模块ID-->
+                <result column="modeDealId" property="modeDealId"/>
+                <!--标题-->
+                <result column="title" property="title"/>
+                <!--生成时间-->
+                <result column="createDate" property="createDate"/>
+                <!--附件名称-->
+                <result column="fjmc" property="fjmc"/>
+                <!--附件地址-->
+                <result column="fjdz" property="fjdz"/>
+                <!--描述-->
+                <result column="ms" property="ms"/>
+                <!--是否显示-->
+                <result column="isView" property="isView"/>
+                <!--显示顺序-->
+                <result column="xh" property="xh"/>
+                <result column="xswz" property="xswz"/>
+        </resultMap>
+        <sql id="childmodeldealfjColumns">id,modeDealId,title,createDate,fjmc,fjdz,ms,isView,xh,xswz</sql>
+        <!--项目基本信息插入SQL -->
+        <insert id="insertChildModelDealFj" parameterType="com.entity.ChildModelDealFj">
+                insert into t_childmodeldealfj (
+                <include refid="childmodeldealfjColumns" />
+                ) values
+                (#{id},#{modeDealId},#{title},#{createDate},#{fjmc},#{fjdz},#{ms},#{isView},#{xh},#{xswz})
+        </insert>
+        <update id="updateChildModelDealFj" parameterType="com.entity.ChildModelDealFj">
+                UPDATE t_childmodeldealfj SET
+               modeDealId=#{modeDealId},title=#{title},createDate=#{createDate},fjmc=#{fjmc},fjdz=#{fjdz},ms=#{ms},isView=#{isView},xh=#{xh},xswz=#{xswz}
+                WHERE id=#{id}
+        </update>
+        <select id="getModelDealInfoFJ" parameterType="com.entity.ChildModelDealFj"
+                resultMap="ChildModelDealFjResultMap">
+                select
+                <include refid="childmodeldealfjColumns" />
+                from t_childmodeldealfj where 1=1
+                <if test="id != null and id != ''">
+                        and id = #{id}
+                </if>
+        </select>
+
+        <select id="listPageChildModelDealFj" resultMap="ChildModelDealFjResultMap"
+                parameterType="com.entity.ChildModelDealFj">
+                SELECT
+                <include refid="childmodeldealfjColumns" />
+                FROM t_childmodeldealfj WHERE 1 = 1
+                <if test="id != null and id != ''">
+                        and id = #{id}
+                </if>
+                <if test="modeDealId != null and modeDealId != ''">
+                        and modeDealId = #{modeDealId}
+                </if>
+                <if test="cxtj != null and cxtj != ''">
+                        ${cxtj}
+                </if>
+        </select>
+        <select id="getlistChildModelDealFj" resultMap="ChildModelDealFjResultMap"
+                parameterType="com.entity.ChildModelDealFj">
+                SELECT
+                <include refid="childmodeldealfjColumns" />
+                FROM t_childmodeldealfj WHERE 1 = 1
+                <if test="id != null and id != ''">
+                        and id = #{id}
+                </if>
+                <if test="modeDealId != null and modeDealId != ''">
+                        and modeDealId = #{modeDealId}
+                </if>
+                <if test="cxtj != null and cxtj != ''">
+                        ${cxtj}
+                </if>
+        </select>
+
+        <delete id="deleteChildModelDealFj" parameterType="string">
+                DELETE  FROM  t_childmodeldealfj  where
+                id=#{id}
+        </delete>
+
+        <select id="getChildModelDealFjInfoByid" resultMap="ChildModelDealFjResultMap"
+                parameterType="string">
+                SELECT
+                <include refid="childmodeldealfjColumns" />
+                FROM t_childmodeldealfj WHERE 1 = 1
+                and id = #{id}
+        </select>
+ 
+</mapper>

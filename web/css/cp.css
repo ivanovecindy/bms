@@ -1,0 +1,24 @@
+@charset "utf-8";
+/* CSS Document */
+#wrapper{
+	width:1178px;
+	}
+.tejia{ margin-top:7px}
+.tejia h2{ color:#333; line-height:24px; height:24px; padding-right:5px; font-weight:normal;}
+.tejia h2 strong{ float:left;}
+.tejia h2 span{ float:right;}
+.tejia_con a img{ width:165px; height:165px;border:#fff solid 1px;}
+.tejia_con a:hover img{ border:#c00 solid 1px;}
+.tejia_con h3{ font-weight:normal; text-align:center; line-height:20px;font-size:12px;}
+.tejia_con h3 span{ color:#c00; font-family:Arial, Helvetica, sans-serif;}
+.tejia_con ul li{ width:185px; height:165px;overflow:hidden;  float:left; margin:0 4px;}
+.tejia_con ul{width:1200px; position:absolute;}
+.tejia_con{position: relative; width:1178px; height:165px;overflow:hidden; }
+
+.tejia_cc{position:relative; height:165px; width:1178px; overflow:hidden;}
+.bbtn{ display:block; width:25px; height:165px;}
+.aleft{ background:url(../images/arrow_left.png) no-repeat center center; position:absolute;left:0; top:0; display:block;}
+.aleft:hover {background:url(../images/arrow2_left.png) no-repeat center center #F5F5F5;}
+
+.aright{background:url(../images/arrow_right.png) no-repeat center center; position:absolute; right:0; top:0; display:block;}
+.aright:hover {background:url(../images/arrow2_right.png) no-repeat center center #F5F5F5;}

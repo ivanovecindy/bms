@@ -1,0 +1,157 @@
+//新增岗位信息页面
+function addcn(p_jobcode){
+	if(p_jobcode=='-1'||p_jobcode==''){
+		alert("请选择根节点!");
+	}else{
+		addpn(p_jobcode);
+	}
+}
+function addpn(p_jobcode){
+	layer.open({
+	    type: 2,
+	    title:'岗位信息',
+	    offset: ['1px', ''],
+		area: ['90%', '90%'],
+	    fix: false, //不固定
+	    maxmin: true,
+	    content:[basepath+'/jsp/system/job_add.jsp?p_jobcode='+p_jobcode, 'yes']
+	});
+}
+//岗位信息提交保存
+function tarSubmit(){
+	if(tt.validate()){
+		if($("#code").val=='1'){
+			alert("代码不能为'1'，因为它是最基本的代码!");
+			return;
+		}
+		$("#sfgd").val($('input:radio[name="sfgd_"]:checked').val());
+		layer.load(1, {shade: [0.8, '#393D49']});
+		 $.post(basepath+"/job/getJobCheck.html",$("#jobForm").serializeArray(),function(data){
+			 if(!data.mesg){
+				 $.post(basepath+"/job/saveJob.html",$("#jobForm").serializeArray(),function(data){
+					 layer.closeAll('loading');
+					 parent.flushList($("#p_jobcode").val(),data.mesg);
+				 }); 
+			 }else{
+				 layer.closeAll('loading');
+				 alert("代码已存在");
+			 }
+		 });
+	}else{
+		 $("#"+tt.vf.invalidEs[0].id).focus();
+	}
+}
+
+//修改标/查看岗位信息
+function updatejob(id,flag){
+	layer.open({
+	    type: 2,
+	    title:'基础信息',
+	    offset: ['1px', ''],
+	    area: ['90%', '90%'],
+	    fix: false, //不固定
+	    maxmin: true,
+	    content:[basepath+'/jsp/system/job_add.jsp?id='+id+'&flag='+flag, 'yes']
+	});
+   }
+      //初始化数据
+	  var data_=null;
+      function initDate(id,flag){
+    	var path=basepath+"/job/updateOrJob.html";
+    	layer.load(1, {shade: [0.8, '#393D49']});
+    	$.ajax({ 
+          type: "post", 
+           url: path,
+           cache:false, 
+           async:false,
+            data:{id:id},
+           dataType: "json", 
+          	success : function(data) {
+        	   var st = ["id","jobcode","p_jobcode","jobName" ];
+        	   initFormData(data,st,"job");
+        	   $("input:radio[name=sfgd_][value="+data.job.sfgd+"]").attr("checked",true);
+        	    if(flag=='view'){
+        		   $.each(st,function(k,v) {
+    					   $("input[name='"+v+"']").attr("disabled",true); 
+    					   $("select[name='"+v+"']").attr("disabled",true); 
+    					   $("textarea[name='"+v+"']").attr("disabled",true);  
+    			   });
+        		   $("#queding").css("display","none");
+        	   }
+        	    $.post(basepath + "/job/getJobName.html", {//从基础信息表中得到下拉框对应的名称
+        	    	jobcode:data.job.p_jobcode
+				}, function(data) {
+				     $("#p_jobName").text(data.job_name);
+				});
+        	    if(data.job.p_jobcode=='-1'){
+        	        $("#p_tr").hide();
+        	      }
+             } 
+          });
+    	 layer.closeAll('loading');
+      }
+  
+     //删除岗位信息
+	   function deljobs(id,sfgd){
+			if(sfgd=='1'){
+				alert("固定岗位不能删除");
+				return ;
+			}
+		   if(confirm("确定要删除数据吗？")){
+			var path=basepath+"/job/deleteJob.html";
+			$.ajax({ 
+                 type: "post", 
+                  url: path, 
+                   data:{jobcode:id},
+                  dataType: "json", 
+                  success: function (data) { 
+                	  if(data.mesg){
+                		  alert("删除成功!");
+                		  window.location.reload(true);
+                		  parent.rereshNode($("#p_jobcode").val());
+                	  }else{
+                		  alert("删除失败!");
+                	  }
+                    } 
+              });
+		   }
+	   }
+ 
+      function quexiao(){
+	           var index = parent.layer.getFrameIndex(window.name);
+	           parent.layer.close(index);
+	        }
+      //查询根节点
+      function search(){
+        var p_jobcode_temp = $("#p_jobcode_temp").val();
+        $.post(basepath+"/job/updateOrJob.html",{jobName:p_jobcode_temp},function(data){
+        	if(data.job!=''){
+        		var pid = data.job.code;
+   			    parent.initjobTree(pid);
+   			    parent.initRoot(pid);
+        	}
+		 });
+      }	 
+    //分配用户
+      function fpuser(id){
+      	 layer.open({
+      		    type: 2,
+      		    title:'用户信息',
+      		    fix: true,
+      		    offset: ['1px', ''],
+      			area: ['90%', '90%'],
+      		    fix: false, //不固定
+      		    maxmin: true,
+      			scrolling: 'auto',
+      		    content:[basepath + '/user/userFpList.html?lead=job&role_id=' + id, 'yes']
+      		});
+      }
+      //分配模块保存
+      function saveFpUser(){
+          $.post(basepath + "/job/saveJobUser.html", {user_sel_ids:sel_check.join(","),user_nosel_ids:sel_noCheck.join(","),job_id:$("#role_id").val()}, function (data) {
+      			if(data.mesg){
+      				alert("分配成功");
+      				quexiao();
+      			}
+      		});  
+      }

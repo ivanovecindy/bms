@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.mapper.ModelDealMapper">
+        <resultMap type="com.entity.ModelDeal" id="ModelDealResultMap">
+                <!--数据唯一性ID-->
+                <id column="id" property="id"/>
+                <!--模块名称-->
+                <result column="modName" property="modName"/>
+                <!--标题-->
+                <result column="title" property="title"/>
+                <!--模块ID-->
+                <result column="modeId" property="modeId"/>
+                <!--生成时间-->
+                <result column="createDate" property="createDate"/>
+                <!--显示顺序-->
+                <result column="xh" property="xh"/>
+                <!--url-->
+                <result column="url" property="url"/>
+                <result column="weburl" property="weburl"/>
+                <!--附件名称-->
+                <result column="fjmc" property="fjmc"/>
+                <!--附件地址-->
+                <result column="fjdz" property="fjdz"/>
+                <!--描述-->
+                <result property="ms" column="ms"  typeHandler="com.util.MyBlobTypeHandler" />
+        </resultMap>
+        <sql id="modeldealColumns">id,modName,modeId,createDate,xh,ms,title,url,fjmc,fjdz,weburl</sql>
+        <select id="getModelDealInfo" parameterType="com.entity.ModelDeal"
+                resultMap="ModelDealResultMap">
+                select
+                <include refid="modeldealColumns" />
+                from t_modeldeal where 1=1
+                <if test="id != null and id != ''">
+                        and id = #{id}
+                </if>
+        </select>
+        <select id="listPageModelDeal" resultMap="ModelDealResultMap"
+                parameterType="com.entity.ModelDeal">
+                SELECT
+                <include refid="modeldealColumns" />
+                FROM t_modeldeal WHERE 1 = 1
+                <if test="id != null and id != ''">
+                        and id = #{id}
+                </if>
+                <if test="modName != null and modName != ''">
+                        and modName = #{modName}
+                </if>
+                <if test="modeId != null and modeId != ''">
+                        and modeId = #{modeId}
+                </if>
+        </select>
+        <select id="getlistModelDeal" resultMap="ModelDealResultMap"
+                parameterType="com.entity.ModelDeal">
+                SELECT
+                <include refid="modeldealColumns" />
+                FROM t_modeldeal WHERE 1 = 1
+                <if test="id != null and id != ''">
+                        and id = #{id}
+                </if>
+                <if test="modName != null and modName != ''">
+                        and modName = #{modName}
+                </if>
+                <if test="modeId != null and modeId != ''">
+                        and modeId = #{modeId}
+                </if>
+                <if test="cxtj != null and cxtj != ''">
+                         ${cxtj}
+                </if>
+
+        </select>
+
+        <!--项目基本信息插入SQL -->
+        <insert id="insertModelDeal" parameterType="com.entity.ModelDeal">
+                insert into t_modeldeal (
+                <include refid="modeldealColumns" />
+                ) values
+                (#{id},#{modName},#{modeId},#{createDate},#{xh},#{ms},#{title},#{url},#{fjmc},#{fjdz},#{weburl})
+        </insert>
+        <update id="updateModelDeal" parameterType="com.entity.ModelDeal">
+                UPDATE t_modeldeal SET
+                 modName=#{modName},modeId=#{modeId},createDate=#{createDate},xh=#{xh},ms=#{ms},title=#{title},url=#{url},fjmc=#{fjmc},fjdz=#{fjdz},weburl=#{weburl}
+                WHERE id=#{id}
+        </update>
+        <delete id="deleteModelDeal" parameterType="string">
+                DELETE  FROM  t_modeldeal  where
+                id=#{id}
+        </delete>
+        <select id="getModelDealInfoByid" resultMap="ModelDealResultMap"
+                parameterType="string">
+                SELECT
+                <include refid="modeldealColumns" />
+                FROM t_modeldeal WHERE 1 = 1
+                and id = #{id}
+        </select>
+        <select id="getModelDeals" resultMap="ModelDealResultMap"
+                parameterType="com.entity.ModelDeal">
+                SELECT t1.* FROM
+                t_modeldeal t1, (select t.id ,max(t.xh) xh from t_modeldeal t group by t.id) t2
+                where t1.id=t2.id  and t1.xh =t2.xh
+                <if test="modName != null and modName != ''">
+                        and modName = #{modName}
+                </if>
+                <if test="modeId != null and modeId != ''">
+                        and modeId = #{modeId}
+                </if>
+        </select>
+</mapper>

@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.mapper.ChildModelDealMapper">
+        <resultMap type="com.entity.ChildModelDeal" id="ChildModelDealResultMap"> 
+                <!--数据唯一性ID-->
+                <id column="id" property="id"/>
+                <!--模块ID-->
+                <result column="modeDealId" property="modeDealId"/>
+                <!--标题-->
+                <result column="title" property="title"/>
+                <!--生成时间-->
+                <result column="createDate" property="createDate"/>
+                <!--附件名称-->
+                <result column="fjmc" property="fjmc"/>
+                <!--附件地址-->
+                <result column="fjdz" property="fjdz"/>
+                <!--模块地址-->
+                <result column="url" property="url"/>
+                <result column="weburl" property="weburl"/>
+                <!--是否显示-->
+                <result column="isView" property="isView"/>
+                <!--显示顺序-->
+                <result column="xh" property="xh"/>
+                <result property="ms" column="ms"  typeHandler="com.util.MyBlobTypeHandler" />
+        </resultMap>
+        <sql id="childmodeldealColumns">id,modeDealId,createDate,fjmc,fjdz,ms,url,isView,xh,weburl,title</sql>
+        <!--项目基本信息插入SQL -->
+        <insert id="insertChildModelDeal" parameterType="com.entity.ChildModelDeal">
+                insert into t_childmodeldeal (
+                <include refid="childmodeldealColumns" />
+                ) values
+                (#{id},#{modeDealId},#{createDate},#{fjmc},#{fjdz},#{ms},#{url},#{isView},#{xh},#{weburl},#{title})
+        </insert>
+        <update id="updateChildModelDeal" parameterType="com.entity.ChildModelDeal">
+                UPDATE t_childmodeldeal SET
+                modeDealId=#{modeDealId},createDate=#{createDate},fjmc=#{fjmc},fjdz=#{fjdz},ms=#{ms},title=#{title},url=#{url},isView=#{isView},xh=#{xh},weburl=#{weburl}
+                WHERE id=#{id}
+        </update>
+        <select id="getModelDealInfoFJ" parameterType="com.entity.ChildModelDeal"
+                resultMap="ChildModelDealResultMap">
+                select
+                <include refid="childmodeldealColumns" />
+                from t_childmodeldeal where 1=1
+                <if test="id != null and id != ''">
+                        and id = #{id}
+                </if>
+        </select>
+
+        <select id="listPageChildModelDeal" resultMap="ChildModelDealResultMap"
+                parameterType="com.entity.ChildModelDeal">
+                SELECT
+                <include refid="childmodeldealColumns" />
+                FROM t_childmodeldeal WHERE 1 = 1
+                <if test="id != null and id != ''">
+                        and id = #{id}
+                </if>
+                <if test="modeDealId != null and modeDealId != ''">
+                        and modeDealId = #{modeDealId}
+                </if>
+                <if test="cxtj != null and cxtj != ''">
+                        ${cxtj}
+                </if>
+        </select>
+        <select id="getlistChildModelDeal" resultMap="ChildModelDealResultMap"
+                parameterType="com.entity.ChildModelDeal">
+                SELECT
+                <include refid="childmodeldealColumns" />
+                FROM t_childmodeldeal WHERE 1 = 1
+                <if test="id != null and id != ''">
+                        and id = #{id}
+                </if>
+                <if test="modeDealId != null and modeDealId != ''">
+                        and modeDealId = #{modeDealId}
+                </if>
+                <if test="cxtj != null and cxtj != ''">
+                        ${cxtj}
+                </if>
+        </select>
+
+        <delete id="deleteChildModelDeal" parameterType="string">
+                DELETE  FROM  t_childmodeldeal  where
+                id=#{id}
+        </delete>
+        <delete id="deleteChildModelDeals" parameterType="string">
+                DELETE  FROM  t_childmodeldeal  where
+                id=#{id}
+        </delete>
+        <select id="getChildModelDealInfoByid" resultMap="ChildModelDealResultMap"
+                parameterType="string">
+                SELECT
+                <include refid="childmodeldealColumns" />
+                FROM t_childmodeldeal WHERE 1 = 1
+                and id = #{id}
+        </select>
+ 
+</mapper>

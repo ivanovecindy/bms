@@ -1,0 +1,149 @@
+//新增部门信息页面
+function addcn(p_depcode){
+	if(p_depcode=='-1'||p_depcode==''){
+		alert("请选择根节点!");
+	}else{
+		addpn(p_depcode);
+	}
+}
+function addpn(p_depcode){
+	layer.open({
+	    type: 2,
+	    title:'部门信息',
+	    offset: ['1px', ''],
+		area: ['90%', '90%'],
+	    fix: false, //不固定
+	    maxmin: true,
+	    content:[basepath+'/jsp/system/department_add.jsp?p_depcode='+p_depcode, 'yes']
+	});
+}
+//部门信息提交保存
+function tarSubmit(){
+	if(tt.validate()){
+		if($("#code").val=='1'){
+			alert("代码不能为'1'，因为它是最基本的代码!");
+			return;
+		}
+		layer.load(1, {shade: [0.8, '#393D49']});
+		 $.post(basepath+"/department/getDepartmentCheck.html",$("#departmentForm").serializeArray(),function(data){
+			 if(!data.mesg){
+				 $.post(basepath+"/department/saveDepartment.html",$("#departmentForm").serializeArray(),function(data){
+					 layer.closeAll('loading');
+					 parent.flushList($("#p_depcode").val(),data.mesg);
+				 }); 
+			 }else{
+				 layer.closeAll('loading');
+				 alert("代码已存在");
+			 }
+		 });
+	}
+}
+
+//修改标/查看部门信息
+function updatedepartment(id,flag){
+	layer.open({
+	    type: 2,
+	    title:'基础信息',
+	    offset: ['1px', ''],
+	    area: ['90%', '90%'],
+	    fix: false, //不固定
+	    maxmin: true,
+	    content:[basepath+'/jsp/system/department_add.jsp?id='+id+'&flag='+flag, 'yes']
+	});
+   }
+      //初始化数据
+	  var data_=null;
+      function initDate(id,flag){
+    	var path=basepath+"/department/updateOrDepartment.html";
+    	layer.load(1, {shade: [0.8, '#393D49']});
+    	$.ajax({ 
+          type: "post", 
+           url: path, 
+            data:{id:id},
+            cache:false, 
+            async:false,
+           dataType: "json", 
+          	success : function(data) {
+        	   var st = ["id","depcode","p_depcode","dep_name","dep_sx" ];
+        	   initFormData(data,st,"department");
+        	    if(flag=='view'){
+        		   $.each(st,function(k,v) {
+    					   $("input[name='"+v+"']").attr("disabled",true); 
+    					   $("select[name='"+v+"']").attr("disabled",true); 
+    					   $("textarea[name='"+v+"']").attr("disabled",true);  
+    			   });
+        		   $("#queding").css("display","none");
+        	   }
+        	    $.post(basepath + "/department/getDepartmentName.html", {//从基础信息表中得到下拉框对应的名称
+        	    	depcode:data.department.p_depcode
+				}, function(data) {
+				     $("#p_dep_name").text(data.dep_name);
+				});
+        	    if(data.department.p_depcode=='-1'){
+        	        $("#p_tr").hide();
+        	      }
+             } 
+          });
+    	 layer.closeAll('loading');
+      }
+  
+     //删除部门信息
+	   function deldepartments(id){
+		   if(confirm("确定要删除数据吗？")){
+			var path=basepath+"/department/deleteDepartment.html";
+			$.ajax({ 
+                 type: "post", 
+                  url: path, 
+                   data:{depcode:id},
+                  dataType: "json", 
+                  success: function (data) { 
+                	  if(data.mesg){
+                		  alert("删除成功!");
+                		  window.location.reload(true);
+                		  parent.rereshNode($("#p_depcode").val());
+                	  }else{
+                		  alert("删除失败!");
+                	  }
+                    } 
+              });
+		   }
+	   }
+ 
+      function quexiao(){
+	           var index = parent.layer.getFrameIndex(window.name);
+	           parent.layer.close(index);
+	        }
+      //查询根节点
+      function search(){
+        var p_depcode_temp = $("#p_depcode_temp").val();
+        $.post(basepath+"/department/updateOrDepartment.html",{dep_name:p_depcode_temp},function(data){
+        	if(data.department!=''){
+        		var pid = data.department.code;
+   			    parent.initdepartmentTree(pid);
+   			    parent.initRoot(pid);
+        	}
+		 });
+      }	 
+    //分配用户
+      function fpuser(id){
+      	 layer.open({
+      		    type: 2,
+      		    title:'用户信息',
+      		    fix: true,
+      		    offset: ['1px', ''],
+      			area: ['90%', '90%'],
+      		    fix: false, //不固定
+      		    maxmin: true,
+      			scrolling: 'auto',
+      		    content:[basepath + '/user/userFpList.html?lead=dep&role_id=' + id, 'yes']
+      		});
+      }
+      //分配模块保存
+      function saveFpBmUser(){
+    	  $.post(basepath + "/department/saveDepUser.html", {user_sel_ids:sel_check.join(","),user_nosel_ids:sel_noCheck.join(","),dep_id:$("#role_id").val()}, function (data) {
+      			if(data.mesg){
+      				alert("分配成功");
+      				quexiao();
+      			}
+      		});  
+      }

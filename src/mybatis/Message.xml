@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.mapper.MessageMapper">
+        <resultMap type="com.entity.Message" id="MessageResultMap">
+                <!--数据唯一性ID-->
+                <id column="id" property="id"/>
+                <!--用户名-->
+                <result column="name" property="name"/>
+                <!--标题-->
+                <result column="title" property="title"/>
+                <!--留言内容-->
+                <result column="context" property="context" typeHandler="com.util.MyBlobTypeHandler"/>
+                <!--生成时间-->
+                <result column="createDate" property="createDate"/>
+                <!--IP-->
+                <result column="ip" property="ip"/>
+                <!--邮箱-->
+                <result column="email" property="email"/>
+                <!--电话-->
+                <result column="tel" property="tel"/>
+                <!--删除-->
+                <result column="delflag" property="delflag"/> 
+        </resultMap>
+        <sql id="messageColumns">id,name,title,context,createDate,ip,email,tel,delflag</sql>
+        <!--项目基本信息插入SQL -->
+        <insert id="insertMessage" parameterType="com.entity.Message">
+                insert into t_message (
+                <include refid="messageColumns" />
+                ) values
+                (#{id},#{name},#{title},#{context},#{createDate},#{ip},#{email},#{tel},#{delflag})
+        </insert>
+        <update id="updateMessage" parameterType="com.entity.Message">
+                UPDATE t_message SET
+                name=#{name},title=#{title},context=#{context},createDate=#{createDate},ip=#{ip},email=#{email},tel=#{tel},delflag=#{delflag}
+                WHERE id=#{id}
+        </update>
+        <select id="getMessageInfo" parameterType="com.entity.Message"
+                resultMap="MessageResultMap">
+                select
+                <include refid="messageColumns" />
+                from t_message where 1=1  and DELFLAG=0
+                <if test="id != null and id != ''">
+                        and id = #{id}
+                </if>
+        </select>
+        <select id="listPageMessage" resultMap="MessageResultMap"
+                parameterType="com.entity.Message">
+                SELECT
+                <include refid="messageColumns" />
+                FROM t_message WHERE 1 = 1 and DELFLAG=0
+                <if test="id != null and id != ''">
+                        and id = #{id}
+                </if>
+                <if test="title != null and title != ''">
+                        and title = #{title}
+                </if>
+                <if test="name != null and name != ''">
+                        and name = #{name}
+                </if>
+                <if test="cxtj != null and cxtj != ''">
+                        and    ${cxtj}
+                </if>
+        </select>
+        <select id="getlistMessage" resultMap="MessageResultMap"
+                parameterType="com.entity.Message">
+                SELECT
+                <include refid="messageColumns" />
+                FROM t_message WHERE 1 = 1
+                and DELFLAG=0
+                <if test="id != null and id != ''">
+                        and id = #{id}
+                </if>
+                <if test="title != null and title != ''">
+                        and title = #{title}
+                </if>
+                <if test="name != null and name != ''">
+                        and name = #{name}
+                </if>
+                <if test="cxtj != null and cxtj != ''">
+                        and    ${cxtj}
+                </if>
+
+        </select>
+
+
+        <update id="deleteMessage" parameterType="string">
+                UPDATE   t_message  set DELFLAG=1 where
+                id=#{id}
+        </update>
+        <select id="getMessageInfoByid" resultMap="MessageResultMap"
+                parameterType="string">
+                SELECT
+                <include refid="messageColumns" />
+                FROM t_message WHERE 1 = 1
+                and id = #{id}
+        </select>
+      
+</mapper>

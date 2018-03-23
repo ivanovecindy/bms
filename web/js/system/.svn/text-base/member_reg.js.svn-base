@@ -1,0 +1,260 @@
+//会员登记信息
+//会员登记信息提交保存
+function memberSave(){
+	 $("#tjzt").val("0");//数据提交状态 0为没有提交 1已提交
+	if(tt.validate()){
+	 layer.load(1, {shade: [0.8, '#393D49']});
+	 $.post(basepath+"/memberReg/saveMemberReg.html",$("#memberForm").serializeArray(),function(data){
+		   $("#id").val(data.id);
+		    alert("保存成功");
+		    layer.closeAll('loading');
+		  });
+	}else{
+		 $("#"+tt.vf.invalidEs[0].id).focus();
+	}
+}
+//修改标/查看会员登记信息
+var data_=null;
+function updateMember(id){
+	var path=basepath+"/memberReg/updateOrMemberReg.html";
+	layer.load(1, {shade: [0.8, '#393D49']});
+	$.ajax({ 
+        type: "post", 
+         url: path, 
+          data:{id:id},
+          cache:false, 
+          async:false,
+          dataType: "json", 
+           success: function (data) { 
+        	   data_=data;
+         	    setTimeout("initFormData_()",1000);//100毫秒后回填信息主要是下拉框数据选中
+         	    clearTimeout("initFormData_()");
+        	 } 
+        });
+	layer.closeAll('loading');
+  }
+
+
+function initFormData_(){
+	 initViewFromSel("qylx","qylx_");//交易方式 
+     //initViewFromSel("jyfw","jyfw_");//竞价类型
+	 if(data_!=null){ 
+		   var st = ["id","memNo","dwmczw", "dwmcew", "bgdz", "fddbr", "fdzjhm","yydb", "yydbzjhm","qylx","zczb","jyfw","zzjgdm","jgjj","memType"];
+    	   initFormData(data_,st,"memberReg");
+    	   if(data_.memberReg.id!=''){
+    	       $("#member_tj").show();
+    	     }
+    	   //会员缴费信息/会员保证金信息
+    	   if(data_.memberReg.tjzt=='1'&&data_.memberReg.spzt=='1'){
+			   $("#member_jf").show();
+    	       $("#member_bzj").show(); 
+		   }
+    	   //会员退会
+    	   if(data_.memberReg.hyzt=='1'){
+    		   $("#member_th").show();
+    	   }
+    	   if(data_.memberReg.spzt=='2'){
+	    		  $("#member_bc").show();
+	    	      $("#member_tj").show();
+	    	   }else{
+	    		   //会员业务状态 会员未激活
+	    		   if(data_.memberReg.tjzt=='1'){
+	        	        $("#member_bc").hide();
+	        	        $("#member_tj").hide();
+	        	        $.each($("input[type='text']"), function(key, value) {
+	        				 $(value).attr("disabled",true);
+	        			 });
+	        	        $.each($("textarea"), function(key, value) {
+	        				   $(value).attr("disabled",true);
+	        				});
+	        			$("select").prop("disabled", true);
+	        	     }else{ //会员业务状态 除会员未激活状态 2续费
+	        	    	 if(data_.memberReg.jfzt=='2'){
+	        	    		  $("#member_bc").show();
+	        	    	      $("#member_tj").show();
+	        	    	} 
+	        	     }
+	    	   } 
+    	  
+    	   //续费是否显示
+    	   $.post(basepath+"/memberReg/memberXfView.html",{},function(data){
+	    	   if(data.xfView=='Yes'){
+				   $("#member_xf").show();
+			   }
+		  });
+    	 if(data_.memberReg.memType!=''){
+    		 getHyjg(data_.memberReg.memType);
+    	 }
+
+		 if(data_.memberReg.tjzt=='1'){
+			 $("#member_sh").show();
+			 $("#member_sh").click(function(){
+				 viewSPMemberReg(data_.memberReg.id);
+			 });
+		 }
+	 }
+ }
+//会员续费
+function memberXf(){
+	 $.post(basepath+"/memberReg/memberXf.html",{},function(data){
+		 window.location.reload(true);
+	  });
+}
+//会员缴费查看
+function memberJfxx(){
+	
+	var title="会员缴费查看";
+	 $.post(basepath+"/memberReg/memberJfxx.html",{},function(data){
+		   if(data.hyjfdh!=null){
+			   var url =basepath+"/incomeOrderInfo/incomeOrderInfoview.html?id="+data.hyjfdh;
+				openDiv(title,url)  
+		   }
+	  });
+  }
+//会员保证金缴费查看
+function memberBzjJfxx(){
+	var title="会员保证金缴费查看";
+	 $.post(basepath+"/memberReg/memberJfxx.html",{},function(data){
+		   if(data.hyjfdh!=null){
+			   var url =basepath+"/incomeOrderInfo/incomeOrderInfoview.html?id="+data.bzjddh;
+				openDiv(title,url)  
+		   }
+	  });
+}
+//会员申请查看
+function viewMember(sqrid){
+	var path=basepath+"/memberReg/viewMemberReg.html";
+	layer.load(1, {shade: [0.8, '#393D49']});
+	$.ajax({ 
+        type: "post", 
+         url: path, 
+          data:{sqrid:sqrid},
+          dataType: "json", 
+           success: function (data) { 
+        	   if(data!=null){
+        		   var st = ["dwmczw", "memno","dwmcew", "bgdz", "fddbr", "fdzjhm","yydb", "yydbzjhm","zczb","zzjgdm","jgjj","memType","tjzt"];
+            	   initFormDataText(data,st,"memberReg");
+            	   initFormData(data,["qylx","jyfw"],"memberReg");
+            	   setTimeout("initFormData_()",1000);//100毫秒后回填信息主要是下拉框数据选中
+            	   clearTimeout("initFormData_()"); 
+        	   }
+        	 } 
+        });
+	layer.closeAll('loading');
+	   }
+ 
+//用户查看
+function viewMemberReg(id){
+	var title="会员查看";
+	var url =basepath+"/jsp/member/member_app_view.jsp?sqrid="+id;
+	openDiv(title,url)
+}
+//会员申请提交
+function memberSPtj(){
+	 var id = $("#id").val();//ID
+	 //会员申请提交校验，不能提交信息不完美的会员申请
+	var path=basepath+"/memberReg/submitMemberCheck.html";
+	layer.load(1, {shade: [0.8, '#393D49']});
+	$.ajax({ 
+        type: "post", 
+         url: path, 
+         data:{id:id},
+         dataType: "json", 
+         cache:false, 
+         async:false,
+         success: function (data) { 
+       	  if(data.mesg){
+       		var path=basepath+"/memberReg/submitMember.html";
+			$.ajax({ 
+                type: "post", 
+                 url: path, 
+                 data:{id:id},
+                 cache:false, 
+                 async:false,
+                 dataType: "json", 
+                 success: function (data) { 
+               	  if(data.mesg){
+               		 $.post(basepath+"/audit/auditApply.html", {shdxid:id,shlx:'1'},function(data){
+						 if (data == '1') {
+							 alert("提交审核成功");
+							 $("#member_tj").hide();
+							 $("#member_id").hide();
+							 window.location.reload(true);
+							 layer.closeAll('loading');
+						 }
+						 if (data == '2') {//
+							 alert("提交审核重复!");
+							 updateMemberspZT(id);
+							 layer.closeAll('loading');
+						 }
+
+            		}); 
+               	  }
+              } 
+             });
+       	  }else{
+       		layer.closeAll('loading');
+       		  alert(data.message);
+       		  return ;
+       	  }
+       } 
+     });
+}
+function updateMemberspZT(id){
+	if (id != '') {
+		$.post(basepath + "/memberReg/updateMemberspZT.html", {id: id}, function (data) {
+			if(data.mesg){
+				window.location.reload(true);
+			}
+		});
+	}
+}
+//会员价格
+function getHyjg(obj){
+	 $.post(basepath+"/itemsRateInfo/updateOrItemsRateInfo.html", {code:obj},function(data){
+		 $("#hyjg_").text("年费:"+data.itemsRateInfo.sfje+"\t保证金:"+data.itemsRateInfo.bzjsfje+"(单位:万元,币种:人民币)");
+	 });
+}
+//会员退保证金
+function tBzj(id){
+	var title="会员退保证金";
+	var url =basepath+"/memberReg/viewBzj.html?sqrid="+id;
+	openDiv(title,url)
+}
+//会员退保证金审核
+function membertbzj(sqrid){
+	 $.post(basepath+"/audit/auditApply.html", {shdxid:sqrid,shlx:'19'},function(data){
+		  alert("提交审核成功");
+	}); 
+}
+//会员退会
+function memberTh(id){
+	if(id==''){
+		id=$("#id").val();
+	}
+	var title="会员退会";
+	var url =basepath+"/memberReg/memberTh.html?id="+id;
+	openDiv(title,url)
+}
+//退会申请保存
+function thSubmit(){
+	layer.load(1, {shade: [0.8, '#393D49']});
+	var url=basepath+'/memberReg/saveMemberReg.html';
+	 $.post(url,$("#memberForm").serializeArray(),function(data){
+		 if(data.mesg){
+			 $.post(basepath+"/audit/auditApply.html", {shdxid:$("#sqrid").val(),shlx:'2'},function(data){
+				  alert("提交审核成功");
+			});
+		 } 
+	});
+	 layer.closeAll('loading'); 
+}
+function quexiao(){
+    var index = parent.layer.getFrameIndex(window.name);
+    parent.layer.close(index);
+ }
+
+//审核查看
+function viewSPMemberReg(id){
+	openDiv("会员审核", basepath + '/jsp/audit_log.jsp?shlx=1&objId=' + id);
+}
